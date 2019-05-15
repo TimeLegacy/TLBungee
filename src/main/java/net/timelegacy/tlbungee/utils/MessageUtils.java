@@ -6,9 +6,9 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class MessageUtils {
 
-	public String messagePrefix = "&b&lMineAqua&8:&r ";
+	public String messagePrefix = "&c&lTimeLegacy&8:&r ";
 	public String MAIN_COLOR = "&f";
-	public String SECOND_COLOR = "&b";
+	public String SECOND_COLOR = "&7";
 	public String SUCCESS_COLOR = "&a";
     public String ERROR_COLOR = "&c";
 
