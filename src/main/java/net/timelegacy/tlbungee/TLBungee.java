@@ -96,7 +96,6 @@ public class TLBungee extends Plugin implements Listener {
 
 		jarUtils = new JarUtils();
 
-		loadLibraries();
 		init();
 		mongoDB.connect(config.getString("URI"));
 
@@ -111,30 +110,6 @@ public class TLBungee extends Plugin implements Listener {
 		// todo
 
 		mongoDB.disconnect();
-	}
-
-	private void loadLibraries() {
-		try {
-			final File[] libs = new File[]{
-					new File(plugin.getDataFolder(), "mongo-java-driver-3.6.1.jar")};
-			for (final File lib : libs) {
-				if (!lib.exists()) {
-					jarUtils.extractFromJar(lib.getName(),
-							lib.getAbsolutePath());
-				}
-			}
-			for (final File lib : libs) {
-				if (!lib.exists()) {
-					plugin.getLogger().warning(
-							"There was a critical error loading My plugin! Could not find lib: "
-									+ lib.getName());
-					return;
-				}
-				addClassPath(jarUtils.getJarUrl(lib));
-			}
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	private void addClassPath(final URL url) throws IOException {
