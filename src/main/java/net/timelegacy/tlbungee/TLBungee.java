@@ -17,7 +17,6 @@ import net.timelegacy.tlbungee.handler.PlayerHandler;
 import net.timelegacy.tlbungee.handler.Rank;
 import net.timelegacy.tlbungee.handler.RankHandler;
 import net.timelegacy.tlbungee.mongodb.MongoDB;
-import net.timelegacy.tlbungee.utils.JarUtils;
 import net.timelegacy.tlbungee.utils.MessageUtils;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
@@ -61,7 +60,6 @@ public class TLBungee extends Plugin implements Listener {
 	public MultiplierHandler multiplierHandler;
 	public PlayerHandler playerHandler;
 	public RankHandler rankHandler;
-	public JarUtils jarUtils;
 	// Utils
 	public MessageUtils messageUtils;
 
@@ -93,8 +91,6 @@ public class TLBungee extends Plugin implements Listener {
 		}
 
 		ProxyServer.getInstance().getServers().clear();
-
-		jarUtils = new JarUtils();
 
 		init();
 		mongoDB.connect(config.getString("URI"));
