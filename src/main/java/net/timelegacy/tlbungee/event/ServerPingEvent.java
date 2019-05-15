@@ -28,22 +28,22 @@ public class ServerPingEvent implements Listener {
 		Players p = sp.getPlayers();
 
 		p.setMax(9999);
-		sp.setFavicon(Favicon.create(getImage("server-icon.png")));
-		String ver = "1.8-1.13";
+		//sp.setFavicon(Favicon.create(getImage("server-icon.png")));
+		String ver = "1.13";
 		
 		if (bungee.multiplierHandler.isMultiplierEnabled()) {
-			sp.setDescription(bungee.messageUtils.c("&b&lMineAqua &f&l|| &b&oALPHA &f&l|| &b&l"
+			sp.setDescription(bungee.messageUtils.c("&c&lTimeLegacy &f&l|| &e&oALPHA &f&l|| &c&l"
 					+ ver
-					+ "\n" + "&6&l" + bungee.multiplierHandler.getMultiplier()
-					+ "x&r &e&lMultiplier &8- &f&lPLAY NOW!"));
+					+ "\n" + "&7&l" + bungee.multiplierHandler.getMultiplier()
+					+ "x&r &f&lMultiplier &8- &f&lPLAY NOW!"));
 
 		} else {
 
 			if (!bungee.whitelist) {
 				sp.setDescription((bungee.messageUtils.c(
-						"&b&lMineAqua &f&l|| &b&oALPHA &f&l|| &b&l"
+						"&c&lMineAqua &f&l|| &e&oALPHA &f&l|| &c&l"
 								+ ver
-								+ "\n" + "&b&oBedWars & more! &f&lPLAY NOW!")));
+								+ "\n" + "&c&oCool Stuff & more! Soon...")));
 
 			} else if (bungee.whitelist) {
 
