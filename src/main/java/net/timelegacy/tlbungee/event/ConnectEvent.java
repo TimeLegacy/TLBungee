@@ -30,7 +30,7 @@ public class ConnectEvent implements Listener {
 	@EventHandler
 	public void onServerJoin(ServerConnectEvent event) {
     if (bungee.whitelist
-        && bungee.rankHandler.getRank(event.getPlayer().getUUID()).getPriority() >= 7) {
+        && bungee.rankHandler.getRank(event.getPlayer().getName()).getPriority() >= 7) {
       event.getPlayer().disconnect(bungee.messageUtils
           .c(bungee.messageUtils.ERROR_COLOR + "Network under maintenance! Check back later..."));
     }
