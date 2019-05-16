@@ -27,20 +27,13 @@ public class ConnectEvent implements Listener {
                 .getServerInfo(bungee.getHubs().get(new SecureRandom().nextInt(bungee.getHubs().size())));
     }
 
-    // ABC123
-
-	// WHITELISTED
-	@SuppressWarnings("deprecation")
-	@EventHandler
-	public void onJoin(LoginEvent event) {
-		if (bungee.whitelist && !bungee.whitelisted.contains(event.getConnection().getUniqueId().toString())) {
-			event.setCancelled(true);
-            event.setCancelReason(bungee.messageUtils.c(bungee.messageUtils.ERROR_COLOR + "Network under maintenance! Check back later..."));
-		}
-	}
-
 	@EventHandler
 	public void onServerJoin(ServerConnectEvent event) {
+    if (bungee.whitelist
+        && bungee.rankHandler.getRank(event.getPlayer().getUUID()).getPriority() >= 7) {
+      event.getPlayer().disconnect(bungee.messageUtils
+          .c(bungee.messageUtils.ERROR_COLOR + "Network under maintenance! Check back later..."));
+    }
 
 		if (!bungee.toggleOptions.containsKey(event.getPlayer().getName())) {
 			bungee.toggleOptions.put(event.getPlayer().getName(), new ToggleOptions());
