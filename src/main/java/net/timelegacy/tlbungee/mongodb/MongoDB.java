@@ -38,7 +38,7 @@ public class MongoDB {
 		players = mongoDatabase.getCollection("players");
 		servers = mongoDatabase.getCollection("servers");
 		settings = mongoDatabase.getCollection("settings");
-        ranks = mongoDatabase.getCollection("ranks");
+		ranks = mongoDatabase.getCollection("ranks");
 
 		return true;
 	}
