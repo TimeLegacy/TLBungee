@@ -1,5 +1,22 @@
 package net.timelegacy.tlbungee;
 
+import com.mongodb.client.MongoCursor;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.InetSocketAddress;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
 import net.timelegacy.tlbungee.commands.ConnectCommand;
 import net.timelegacy.tlbungee.commands.FindPlayerCommand;
 import net.timelegacy.tlbungee.commands.GlobalWhiteListCommand;
@@ -14,36 +31,14 @@ import net.timelegacy.tlbungee.event.PlayerEvent;
 import net.timelegacy.tlbungee.event.ServerPingEvent;
 import net.timelegacy.tlbungee.handler.MultiplierHandler;
 import net.timelegacy.tlbungee.handler.PlayerHandler;
-import net.timelegacy.tlbungee.handler.Rank;
 import net.timelegacy.tlbungee.handler.RankHandler;
 import net.timelegacy.tlbungee.mongodb.MongoDB;
 import net.timelegacy.tlbungee.utils.MessageUtils;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.Filters;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.config.Configuration;
-import net.md_5.bungee.config.ConfigurationProvider;
-import net.md_5.bungee.config.YamlConfiguration;
 import org.bson.Document;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.InetSocketAddress;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 public class TLBungee extends Plugin implements Listener {
 
 	public boolean whitelist = false;
-	public List<String> whitelisted = new ArrayList<String>();
 
 	private static TLBungee plugin = null;
 
@@ -125,22 +120,6 @@ public class TLBungee extends Plugin implements Listener {
 
 		registerCommands();
 		registerEvents();
-
-		whitelisted.clear();
-
-		for (Rank rank : rankHandler.rankList) {
-			if (rank.getPriority() >= 7) {
-				MongoCursor<Document> cursor = mongoDB.players
-                        .find(Filters.eq("rank", rank.getName().toUpperCase()))
-						.iterator();
-
-				while (cursor.hasNext()) {
-					Document doc = cursor.next();
-					whitelisted.add(doc.getString("uuid"));
-				}
-			}
-		}
-		
 
 		getServersAndHubs();
 	}

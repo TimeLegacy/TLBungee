@@ -1,14 +1,11 @@
 package net.timelegacy.tlbungee.commands;
 
-import net.timelegacy.tlbungee.TLBungee;
-import net.timelegacy.tlbungee.handler.Rank;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.Filters;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
-import org.bson.Document;
+import net.timelegacy.tlbungee.TLBungee;
+import net.timelegacy.tlbungee.handler.Rank;
 
 public class RefreshNetworkCommand extends Command {
 
@@ -30,23 +27,7 @@ public class RefreshNetworkCommand extends Command {
 
 				ProxyServer.getInstance().getServers().clear();
 				bungee.hubs.clear();
-
 				bungee.getServersAndHubs();
-
-				bungee.whitelisted.clear();
-
-                for (Rank rank : bungee.rankHandler.rankList) {
-                    if (rank.getPriority() >= 7) {
-                        MongoCursor<Document> cursor = bungee.mongoDB.players
-                                .find(Filters.eq("rank", rank.getName()))
-                                .iterator();
-
-                        while (cursor.hasNext()) {
-                            Document doc = cursor.next();
-                            bungee.whitelisted.add(doc.getString("uuid"));
-                        }
-                    }
-                }
 
 				bungee.messageUtils.sendMessage(p, bungee.messageUtils.SUCCESS_COLOR + "Successfuly refreshed servers & whitelisted players.", true);
 
