@@ -34,14 +34,14 @@ public class ServerPingEvent implements Listener {
 		if (bungee.multiplierHandler.isMultiplierEnabled()) {
 			sp.setDescription(
 					bungee.messageUtils.c(
-							"                 &8<&3< &b{ &6&lTIME LEGACY &b} &3>&8>\\n       &a&lCOMING SOON &7/ &a&lMultiplier Enabled!"));
+							"                 &8<&3< &b{ &6&lTIME LEGACY &b} &3>&8>\n       &a&lCOMING SOON &7/ &a&lMultiplier Enabled!"));
 
 		} else {
 
 			if (!bungee.whitelist) {
 				sp.setDescription(
 						(bungee.messageUtils.c(
-								"                 &8<&3< &b{ &6&lTIME LEGACY &b} &3>&8>\\n       &a&lCOMING SOON &7/ &C&n&lRELEASE DATE TBA")));
+								"                 &8<&3< &b{ &6&lTIME LEGACY &b} &3>&8>\n       &a&lCOMING SOON &7/ &C&n&lRELEASE DATE TBA")));
 
 			} else if (bungee.whitelist) {
 
@@ -50,7 +50,7 @@ public class ServerPingEvent implements Listener {
 
 				sp.setDescription(
 						(bungee.messageUtils.c(
-								"                 &8<&3< &b{ &6&lTIME LEGACY &b} &3>&8>\\n       &a&lCOMING SOON &7/ &c&oNetwork under maintenance! Check back later...")));
+								"                 &8<&3< &b{ &6&lTIME LEGACY &b} &3>&8>\n       &a&lCOMING SOON &7/ &c&oNetwork under maintenance! Check back later...")));
 
 				//version.setName("&5&nMaintenance");
 				version.setName(bungee.messageUtils.c("&7?/?"));
