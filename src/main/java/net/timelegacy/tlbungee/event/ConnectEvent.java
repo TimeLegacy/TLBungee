@@ -48,9 +48,18 @@ public class ConnectEvent implements Listener {
 			ServerInfo target = randomHub();
 			if (target.canAccess(event.getPlayer())) {
 				try {
-					event.setTarget(randomHub());
-                    bungee.messageUtils.sendMessage(event.getPlayer(), bungee.messageUtils.MAIN_COLOR + "You have joined " + bungee.messageUtils.SECOND_COLOR + target.getName(), true);
-				} catch (Exception e) {
+
+          if (bungee.rankHandler.getRank(event.getPlayer().getName()).getPriority() >= 7) {
+            event.setTarget(randomHub());
+            bungee.messageUtils.sendMessage(
+                event.getPlayer(),
+                bungee.messageUtils.MAIN_COLOR
+                    + "You have joined "
+                    + bungee.messageUtils.SECOND_COLOR
+                    + target.getName(),
+                true);
+          }
+        } catch (Exception e) {
 					System.out.print(e.getMessage());
 				}
 			}

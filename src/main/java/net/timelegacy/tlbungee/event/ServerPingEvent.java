@@ -32,28 +32,25 @@ public class ServerPingEvent implements Listener {
 		String ver = "1.13";
 		
 		if (bungee.multiplierHandler.isMultiplierEnabled()) {
-			sp.setDescription(bungee.messageUtils.c("&c&lTimeLegacy &f&l|| &e&oALPHA &f&l|| &c&l"
-					+ ver
-					+ "\n" + "&7&l" + bungee.multiplierHandler.getMultiplier()
-					+ "x&r &f&lMultiplier &8- &f&lPLAY NOW!"));
+			sp.setDescription(
+					bungee.messageUtils.c(
+							"                 &8<&3< &b{ &6&lTIME LEGACY &b} &3>&8>\\n       &a&lCOMING SOON &7/ &a&lMultiplier Enabled!"));
 
 		} else {
 
 			if (!bungee.whitelist) {
-				sp.setDescription((bungee.messageUtils.c(
-						"&c&lMineAqua &f&l|| &e&oALPHA &f&l|| &c&l"
-								+ ver
-								+ "\n" + "&c&oCool Stuff & more! Soon...")));
+				sp.setDescription(
+						(bungee.messageUtils.c(
+								"                 &8<&3< &b{ &6&lTIME LEGACY &b} &3>&8>\\n       &a&lCOMING SOON &7/ &C&n&lRELEASE DATE TBA")));
 
 			} else if (bungee.whitelist) {
 
 				ServerPing.Protocol version = sp.getVersion();
 				version.setProtocol(999);
 
-				sp.setDescription((bungee.messageUtils.c(
-						"&b&lMineAqua &f&l|| &b&oALPHA &f&l|| &b&l"
-								+ ver
-								+ "\n" + "&c&oNetwork under maintenance! Check back later...")));
+				sp.setDescription(
+						(bungee.messageUtils.c(
+								"                 &8<&3< &b{ &6&lTIME LEGACY &b} &3>&8>\\n       &a&lCOMING SOON &7/ &c&oNetwork under maintenance! Check back later...")));
 
 				//version.setName("&5&nMaintenance");
 				version.setName(bungee.messageUtils.c("&7?/?"));

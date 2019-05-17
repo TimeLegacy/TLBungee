@@ -6,13 +6,12 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class MessageUtils {
 
-	public String messagePrefix = "&c&lTimeLegacy&8:&r ";
-	public String MAIN_COLOR = "&f";
-	public String SECOND_COLOR = "&7";
+	public String messagePrefix = "";
+	public String MAIN_COLOR = "&e";
+	public String SECOND_COLOR = "&6";
 	public String SUCCESS_COLOR = "&a";
-    public String ERROR_COLOR = "&c";
-
-	public String noPermission = messagePrefix + "&cYou do not have permission to perform this action!";
+	public String noPermission = "&cYou do not have permission to perform this action!";
+	public String ERROR_COLOR = "&c";
 
 	/**
 	 * No Permission
