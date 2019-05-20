@@ -4,10 +4,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -78,19 +75,6 @@ public class TLBungee extends Plugin implements Listener {
 		MongoDB.disconnect();
 	}
 
-	private void addClassPath(final URL url) throws IOException {
-		final URLClassLoader sysloader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-		final Class<URLClassLoader> sysclass = URLClassLoader.class;
-		try {
-			final Method method = sysclass.getDeclaredMethod("addURL", URL.class);
-			method.setAccessible(true);
-			method.invoke(sysloader, url);
-		} catch (final Throwable t) {
-			t.printStackTrace();
-			throw new IOException("Error adding " + url + " to system classloader");
-		}
-	}
-
 	private void load() {
 
 		registerCommands();
@@ -144,9 +128,6 @@ public class TLBungee extends Plugin implements Listener {
 		plugin.getProxy().getPluginManager().registerCommand(plugin, new FindPlayerCommand());
 		plugin.getProxy().getPluginManager().registerCommand(plugin, new ToggleOptionsCommand());
 
-		// i havent updated the party code to have the new message colors shits fuck this fuck
-		//plugin.getProxy().getPluginManager().registerCommand(plugin, new PartyCommand());
-
 		plugin.getProxy().getPluginManager().registerCommand(plugin, new GlobalWhiteListCommand());
 		plugin.getProxy().getPluginManager().registerCommand(plugin, new KickCommand());
 		plugin.getProxy().getPluginManager().registerCommand(plugin, new ConnectCommand());
@@ -163,15 +144,4 @@ public class TLBungee extends Plugin implements Listener {
 	public List<String> getHubs() {
 		return hubs;
 	}
-
-	/*
-	 * public static void listHubs() { hubs.clear();
-	 * 
-	 * for (ServerInfo server : ProxyServer.getInstance().getServers() .values()) {
-	 * if (server.getName().startsWith("HUB")) { if
-	 * (hubs.contains(server.getName())) { System.out.print(
-	 * "Already found the server " + server.getName() + " on the list"); } else {
-	 * hubs.add(server.getName()); System.out.print("Added the server " +
-	 * server.getName() + " to the list."); } } } }
-	 */
 }
