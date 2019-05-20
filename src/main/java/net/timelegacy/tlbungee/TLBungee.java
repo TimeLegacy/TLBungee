@@ -1,5 +1,6 @@
 package net.timelegacy.tlbungee;
 
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import java.io.File;
 import java.io.IOException;
@@ -29,11 +30,8 @@ import net.timelegacy.tlbungee.commands.ToggleOptionsCommand;
 import net.timelegacy.tlbungee.event.ConnectEvent;
 import net.timelegacy.tlbungee.event.PlayerEvent;
 import net.timelegacy.tlbungee.event.ServerPingEvent;
-import net.timelegacy.tlbungee.handler.MultiplierHandler;
-import net.timelegacy.tlbungee.handler.PlayerHandler;
 import net.timelegacy.tlbungee.handler.RankHandler;
 import net.timelegacy.tlbungee.mongodb.MongoDB;
-import net.timelegacy.tlbungee.utils.MessageUtils;
 import org.bson.Document;
 
 public class TLBungee extends Plugin implements Listener {
@@ -42,7 +40,7 @@ public class TLBungee extends Plugin implements Listener {
 
 	private static TLBungee plugin = null;
 
-	public static TLBungee getInstance() {
+	public static TLBungee getPlugin() {
 		return plugin;
 	}
 
@@ -51,27 +49,7 @@ public class TLBungee extends Plugin implements Listener {
 
 	public List<String> hubs = new LinkedList<String>();
 
-	// Handlers
-	public MultiplierHandler multiplierHandler;
-	public PlayerHandler playerHandler;
-	public RankHandler rankHandler;
-	// Utils
-	public MessageUtils messageUtils;
-
-	public MongoDB mongoDB;
-
 	public Configuration config;
-
-	private void init() {
-
-		multiplierHandler = new MultiplierHandler();
-		playerHandler = new PlayerHandler();
-		rankHandler = new RankHandler();
-		// Utils
-		messageUtils = new MessageUtils();
-
-		mongoDB = new MongoDB();
-	}
 
 	@Override
 	public void onEnable() {
@@ -87,20 +65,17 @@ public class TLBungee extends Plugin implements Listener {
 
 		ProxyServer.getInstance().getServers().clear();
 
-		init();
-		mongoDB.connect(config.getString("URI"));
+		MongoDB.connect(config.getString("URI"));
 
 		load();
 
-		rankHandler.loadRanks();
+		RankHandler.loadRanks();
 
 	}
 
 	@Override
 	public void onDisable() {
-		// todo
-
-		mongoDB.disconnect();
+		MongoDB.disconnect();
 	}
 
 	private void addClassPath(final URL url) throws IOException {
@@ -128,16 +103,18 @@ public class TLBungee extends Plugin implements Listener {
 		ProxyServer.getInstance().getServers().clear();
 		hubs.clear();
 
+		MongoCollection<Document> servers = MongoDB.mongoDatabase.getCollection("servers");
+
 		try {
 
-			MongoCursor<Document> cursor = mongoDB.servers.find().iterator();
+			MongoCursor<Document> cursor = servers.find().iterator();
 			while (cursor.hasNext()) {
 				Document doc = cursor.next();
 
-				String name = doc.getString("uid");
+				String name = doc.getString("uuid");
 				String address = doc.getString("ip");
-				String type = doc.getString("type");
 				int prt = doc.getInteger("port");
+				String type = doc.getString("type");
 
 				if (!ProxyServer.getInstance().getServers().containsKey(name)) {
 

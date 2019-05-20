@@ -1,61 +1,66 @@
 package net.timelegacy.tlbungee.event;
 
-import net.timelegacy.tlbungee.TLBungee;
-import net.timelegacy.tlbungee.ToggleOptions;
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import java.security.SecureRandom;
 import net.md_5.bungee.api.AbstractReconnectHandler;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.LoginEvent;
-import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.timelegacy.tlbungee.TLBungee;
+import net.timelegacy.tlbungee.ToggleOptions;
+import net.timelegacy.tlbungee.handler.RankHandler;
+import net.timelegacy.tlbungee.mongodb.MongoDB;
+import net.timelegacy.tlbungee.utils.MessageUtils;
 import org.bson.Document;
-
-import java.security.SecureRandom;
 
 public class ConnectEvent implements Listener {
 
-	private static TLBungee bungee = TLBungee.getInstance();
+	private static TLBungee plugin = TLBungee.getPlugin();
+
+	private static MongoCollection<Document> servers = MongoDB.mongoDatabase.getCollection("servers");
 
     private static ServerInfo randomHub() {
         return ProxyServer.getInstance()
-                .getServerInfo(bungee.getHubs().get(new SecureRandom().nextInt(bungee.getHubs().size())));
+						.getServerInfo(
+								plugin.getHubs().get(new SecureRandom().nextInt(plugin.getHubs().size())));
     }
 
 	@EventHandler
 	public void onServerJoin(ServerConnectEvent event) {
-    if (bungee.whitelist
-        && !(bungee.rankHandler.getRank(event.getPlayer().getName()).getPriority() >= 7)) {
-      System.out.println(bungee.rankHandler.getRank(event.getPlayer().getName()).getPriority());
-      event.getPlayer().disconnect(bungee.messageUtils
-          .c(bungee.messageUtils.ERROR_COLOR + "Network under maintenance! Check back later..."));
+		if (plugin.whitelist
+				&& !(RankHandler.getRank(event.getPlayer().getName()).getPriority() >= 7)) {
+			System.out.println(RankHandler.getRank(event.getPlayer().getName()).getPriority());
+			event.getPlayer().disconnect(MessageUtils
+					.colorize(MessageUtils.ERROR_COLOR + "Network under maintenance! Check back later..."));
     }
 
-		if (!bungee.toggleOptions.containsKey(event.getPlayer().getName())) {
-			bungee.toggleOptions.put(event.getPlayer().getName(), new ToggleOptions());
+		if (!plugin.toggleOptions.containsKey(event.getPlayer().getName())) {
+			plugin.toggleOptions.put(event.getPlayer().getName(), new ToggleOptions());
 		}
 
 		// if (event.getTarget().getName().contains("HUB")) {
-		if (((event.getPlayer().getServer() == null) || ((bungee.getHubs().contains(event.getTarget().getName()))
-				&& (!bungee.getHubs().contains(event.getPlayer().getServer().getInfo().getName()))))
-				&& (bungee.getHubs().contains(event.getTarget().getName()))) {
+		if (((event.getPlayer().getServer() == null) || (
+				(plugin.getHubs().contains(event.getTarget().getName()))
+						&& (!plugin.getHubs().contains(event.getPlayer().getServer().getInfo().getName()))))
+				&& (plugin.getHubs().contains(event.getTarget().getName()))) {
 
 			ServerInfo target = randomHub();
 			if (target.canAccess(event.getPlayer())) {
 				try {
 
-          if (bungee.rankHandler.getRank(event.getPlayer().getName()).getPriority() >= 7) {
+					if (RankHandler.getRank(event.getPlayer().getName()).getPriority() >= 9) {
             event.setTarget(randomHub());
-            bungee.messageUtils.sendMessage(
+						MessageUtils.sendMessage(
                 event.getPlayer(),
-                bungee.messageUtils.MAIN_COLOR
+								MessageUtils.MAIN_COLOR
                     + "You have joined "
-                    + bungee.messageUtils.SECOND_COLOR
+										+ MessageUtils.SECOND_COLOR
                     + target.getName(),
                 true);
           }
@@ -74,8 +79,8 @@ public class ConnectEvent implements Listener {
 
 		if (e.getPlayer().getServer() != null) {
 			kickedFrom = e.getPlayer().getServer().getInfo();
-		} else if (bungee.getProxy().getReconnectHandler() != null) {
-			kickedFrom = bungee.getProxy().getReconnectHandler().getServer(e.getPlayer());
+		} else if (plugin.getProxy().getReconnectHandler() != null) {
+			kickedFrom = plugin.getProxy().getReconnectHandler().getServer(e.getPlayer());
 		} else {
 			kickedFrom = AbstractReconnectHandler.getForcedHost(e.getPlayer().getPendingConnection());
 			if (kickedFrom == null)
@@ -85,43 +90,14 @@ public class ConnectEvent implements Listener {
 
 		// ABC123
 
-		FindIterable<Document> doc = bungee.mongoDB.servers.find(Filters.eq("uid", kickedFrom.getName()));
+		FindIterable<Document> doc = servers.find(Filters.eq("uuid", kickedFrom.getName()));
 		String state = doc.first().getString("type");
 
 		if (!state.equalsIgnoreCase("LOBBY")) {
 			e.setCancelled(true);
 			e.setCancelServer(randomHub());
 
-            //bungee.messageUtils.sendMessage(p, bungee.messageUtils.MAIN_COLOR + "Disconnected: &7" + e.getKickReason(), false);
+			//MessageUtils.sendMessage(p, MessageUtils.MAIN_COLOR + "Disconnected: &7" + e.getKickReason(), false);
 		}
 	}
-
-	@EventHandler
-	public void onServerLeave(PlayerDisconnectEvent e) {
-		ProxiedPlayer p = e.getPlayer();
-
-		bungee.rankHandler.playerCache.remove(e.getPlayer().getName());
-	}
-
-
-    //TODO
-	/*@EventHandler
-	public void onSwitch(ServerSwitchEvent e) {
-		ProxiedPlayer p = e.getPlayer();
-		if (bungee.party.partylist.contains(p.getName())) {
-			ServerInfo si = p.getServer().getInfo();
-
-			bungee.messageUtils.sendMessage(p, "&eThe party has joined the server &b" + si.getName(),
-					"&6&lPARTY&8: &r");
-			for (ProxiedPlayer x : ProxyServer.getInstance().getPlayers()) {
-				if ((bungee.party.inparty.containsKey(x.getName()))
-						&& (bungee.party.inparty.get(x.getName()) == p.getName())) {
-					bungee.messageUtils.sendMessage(x, "&eThe party has joined the server &b" + si.getName(),
-							"&6&lPARTY&8: &r");
-					x.connect(si);
-				}
-			}
-		}
-	}*/
-
 }

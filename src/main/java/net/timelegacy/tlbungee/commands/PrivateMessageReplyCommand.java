@@ -1,16 +1,17 @@
 package net.timelegacy.tlbungee.commands;
 
-import net.timelegacy.tlbungee.TLBungee;
-import net.timelegacy.tlbungee.ToggleOptions;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+import net.timelegacy.tlbungee.TLBungee;
+import net.timelegacy.tlbungee.ToggleOptions;
+import net.timelegacy.tlbungee.utils.MessageUtils;
 
 public class PrivateMessageReplyCommand extends Command {
 
-	private static TLBungee bungee = TLBungee.getInstance();
+	private static TLBungee plugin = TLBungee.getPlugin();
 
 	public PrivateMessageReplyCommand() {
 		super("reply", null, "r", "respond");
@@ -18,25 +19,29 @@ public class PrivateMessageReplyCommand extends Command {
 
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-		if (!bungee.toggleOptions.containsKey(sender.getName()))
-			bungee.toggleOptions.put(sender.getName(), new ToggleOptions());
+		if (!plugin.toggleOptions.containsKey(sender.getName())) {
+			plugin.toggleOptions.put(sender.getName(), new ToggleOptions());
+		}
 
 		if (args.length < 1) {
-			bungee.messageUtils.sendMessage(sender, bungee.messageUtils.ERROR_COLOR + "Usage: /r <message>", true);
+			MessageUtils.sendMessage(sender, MessageUtils.ERROR_COLOR + "Usage: /r <message>", true);
 			return;
 		}
 
-		if (!bungee.messagesToReturn.containsKey(sender.getName())) {
-			bungee.messageUtils.sendMessage(sender, bungee.messageUtils.ERROR_COLOR + "You have no message to respond to.", true);
+		if (!plugin.messagesToReturn.containsKey(sender.getName())) {
+			MessageUtils
+					.sendMessage(sender, MessageUtils.ERROR_COLOR + "You have no message to respond to.",
+							true);
 			return;
 		}
 
-		String reciepent = bungee.messagesToReturn.get(sender.getName());
+		String reciepent = plugin.messagesToReturn.get(sender.getName());
 		ProxiedPlayer p = ProxyServer.getInstance().getPlayer(reciepent);
 
 		if (p == null) {
-			bungee.messageUtils.sendMessage(sender, bungee.messageUtils.ERROR_COLOR + "The player you are responding to disconnected.", true);
-			bungee.messagesToReturn.remove(sender.getName());
+			MessageUtils.sendMessage(sender,
+					MessageUtils.ERROR_COLOR + "The player you are responding to disconnected.", true);
+			plugin.messagesToReturn.remove(sender.getName());
 			return;
 		}
 
@@ -45,20 +50,21 @@ public class PrivateMessageReplyCommand extends Command {
 		for (String arg : args)
 			msg.append(arg + " ");
 
-		if (bungee.toggleOptions.get(p.getName()).isAllowPrivateMessages()) {
-			bungee.messageUtils.sendMessage(sender, "(&7To&8) &f"
+		if (plugin.toggleOptions.get(p.getName()).isAllowPrivateMessages()) {
+			MessageUtils.sendMessage(sender, "(&7To&8) &f"
 					+ reciepent + "&8:&f "
 					+ ChatColor.stripColor(msg.toString()), "&8[&7PM&8] &8");
-			
-			bungee.messageUtils.sendMessage(p, "(&7From&8) &f"
+
+			MessageUtils.sendMessage(p, "(&7From&8) &f"
 					+ sender.getName() + "&8:&f "
 					+ ChatColor.stripColor(msg.toString()), "&8[&7PM&8] &8");
 		} else {
-			bungee.messageUtils.sendMessage(sender, bungee.messageUtils.ERROR_COLOR + p.getName() + " has disabled private messaging.", true);
+			MessageUtils.sendMessage(sender,
+					MessageUtils.ERROR_COLOR + p.getName() + " has disabled private messaging.", true);
 		}
 
-		bungee.messagesToReturn.put(sender.getName(), p.getName());
-		bungee.messagesToReturn.put(p.getName(), sender.getName());
+		plugin.messagesToReturn.put(sender.getName(), p.getName());
+		plugin.messagesToReturn.put(p.getName(), sender.getName());
 	}
 
 }

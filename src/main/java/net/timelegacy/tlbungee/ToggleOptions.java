@@ -8,6 +8,8 @@ public class ToggleOptions {
 	public ToggleOptions() {
 		
 	}
+
+	//TODO make this use the DB along with statuses and shit.
 	
 	public boolean isAllowPrivateMessages() {
 		return allowPrivateMessages;

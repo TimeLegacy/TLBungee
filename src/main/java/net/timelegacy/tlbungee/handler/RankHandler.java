@@ -1,36 +1,35 @@
 package net.timelegacy.tlbungee.handler;
 
-import net.timelegacy.tlbungee.TLBungee;
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
+import java.util.ArrayList;
+import java.util.List;
+import net.timelegacy.tlbungee.mongodb.MongoDB;
 import org.bson.Document;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 public class RankHandler {
-	public List<Rank> rankList = new ArrayList<>();
 
-    public HashMap<String, String> playerCache = new HashMap<>();
-	private TLBungee bungee = TLBungee.getInstance();
+	public static List<Rank> rankList = new ArrayList<>();
+	public static MongoCollection<Document> ranks = MongoDB.mongoDatabase.getCollection("ranks");
+	public static MongoCollection<Document> players = MongoDB.mongoDatabase.getCollection("players");
 
-	public void loadRanks() {
+	public static void loadRanks() {
 
 		try {
-			MongoCursor<Document> cursor = bungee.mongoDB.ranks.find().iterator();
+			MongoCursor<Document> cursor = ranks.find().iterator();
 			while (cursor.hasNext()) {
 				Document doc = cursor.next();
 
 				String name = doc.getString("name");
 				int priority = doc.getInteger("priority");
-				String chat = doc.getString("chat");
-				String maincolor = doc.getString("maincolor");
-				String cocolor = doc.getString("cocolor");
-				String tab = doc.getString("tab");
+				String chat = doc.getString("chat_format");
+				String primary_color = doc.getString("primary_color");
+				String secondary_color = doc.getString("secondary_color");
+				String tab = doc.getString("tab_format");
 
-				rankList.add(new Rank(name, priority, chat, maincolor, cocolor, tab));
+				rankList.add(new Rank(name, priority, chat, primary_color, secondary_color, tab));
 
 			}
 
@@ -40,18 +39,11 @@ public class RankHandler {
 		}
 	}
 
-	/**
-	 * Get the rank of a player
-	 *
-	 * @param p
-	 * @return
-	 */
-
-	public Rank getRank(String p) {
+	public static Rank getRank(String playerName) {
 		Rank rank = null;
 
-		if (bungee.playerHandler.playerExistsName(p)) {
-			FindIterable<Document> doc = bungee.mongoDB.players.find(Filters.eq("username", p));
+		if (PlayerHandler.playerExistsName(playerName)) {
+			FindIterable<Document> doc = players.find(Filters.eq("username", playerName));
 			String rnk = doc.first().getString("rank");
 
 			for (Rank r : rankList) {

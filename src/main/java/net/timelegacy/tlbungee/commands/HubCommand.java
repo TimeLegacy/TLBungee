@@ -1,19 +1,22 @@
 package net.timelegacy.tlbungee.commands;
 
-import net.timelegacy.tlbungee.TLBungee;
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import java.security.SecureRandom;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+import net.timelegacy.tlbungee.TLBungee;
+import net.timelegacy.tlbungee.mongodb.MongoDB;
+import net.timelegacy.tlbungee.utils.MessageUtils;
 import org.bson.Document;
-
-import java.security.SecureRandom;
 
 public class HubCommand extends Command {
 
-	private TLBungee bungee = TLBungee.getInstance();
+	private static MongoCollection<Document> servers = MongoDB.mongoDatabase.getCollection("servers");
+	private TLBungee plugin = TLBungee.getPlugin();
 
 	public HubCommand() {
 		super("hub", "", "exit", "lobby", "spawn", "mineaqua");
@@ -26,15 +29,18 @@ public class HubCommand extends Command {
 
 			ProxiedPlayer p = (ProxiedPlayer) sender;
 
-
-			FindIterable<Document> doc = bungee.mongoDB.servers.find(Filters.eq("uid", p.getServer().getInfo().getName()));
+			FindIterable<Document> doc = servers
+					.find(Filters.eq("uid", p.getServer().getInfo().getName()));
 			String state = doc.first().getString("type");
 			
 			if(!state.equalsIgnoreCase("LOBBY")) {
 				p.connect(ProxyServer.getInstance()
-						.getServerInfo(bungee.getHubs().get(new SecureRandom().nextInt(bungee.getHubs().size()))));
+						.getServerInfo(
+								plugin.getHubs().get(new SecureRandom().nextInt(plugin.getHubs().size()))));
 			}else {
-				bungee.messageUtils.sendMessage(p, bungee.messageUtils.ERROR_COLOR + "You are already connected to a lobby.", true);
+				MessageUtils
+						.sendMessage(p, MessageUtils.ERROR_COLOR + "You are already connected to a lobby.",
+								true);
 			}
 		}
 
