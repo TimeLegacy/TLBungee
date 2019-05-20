@@ -3,6 +3,7 @@ package net.timelegacy.tlbungee.handler;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import java.util.UUID;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.timelegacy.tlbungee.mongodb.MongoDB;
 import org.bson.Document;
@@ -19,6 +20,11 @@ public class PlayerHandler {
 
 	public static boolean playerExistsName(String playerName) {
 		FindIterable<Document> iterable = players.find(new Document("username", playerName));
+		return iterable.first() != null;
+	}
+
+	public static boolean playerExistsUUID(UUID uuid) {
+		FindIterable<Document> iterable = players.find(new Document("uuid", uuid.toString()));
 		return iterable.first() != null;
 	}
 

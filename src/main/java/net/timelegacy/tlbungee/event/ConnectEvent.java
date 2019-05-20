@@ -8,12 +8,14 @@ import net.md_5.bungee.api.AbstractReconnectHandler;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.timelegacy.tlbungee.TLBungee;
 import net.timelegacy.tlbungee.ToggleOptions;
+import net.timelegacy.tlbungee.handler.PlayerHandler;
 import net.timelegacy.tlbungee.handler.RankHandler;
 import net.timelegacy.tlbungee.mongodb.MongoDB;
 import net.timelegacy.tlbungee.utils.MessageUtils;
@@ -25,21 +27,28 @@ public class ConnectEvent implements Listener {
 
 	private static MongoCollection<Document> servers = MongoDB.mongoDatabase.getCollection("servers");
 
-    private static ServerInfo randomHub() {
+  private static ServerInfo randomHub() {
         return ProxyServer.getInstance()
 						.getServerInfo(
 								plugin.getHubs().get(new SecureRandom().nextInt(plugin.getHubs().size())));
+  }
+
+  @EventHandler
+  public void onJoin(LoginEvent event) {
+    if (plugin.whitelist) {
+      if (RankHandler.getRank(event.getConnection().getUniqueId()).getPriority() < 7
+          || !PlayerHandler.playerExistsUUID(event.getConnection().getUniqueId())) {
+        event.setCancelled(true);
+        event.setCancelReason(
+            MessageUtils.colorize(
+                MessageUtils.ERROR_COLOR + "Network under maintenance! Check back later..."));
+      }
     }
+  }
+
 
 	@EventHandler
 	public void onServerJoin(ServerConnectEvent event) {
-		if (plugin.whitelist
-				&& !(RankHandler.getRank(event.getPlayer().getName()).getPriority() >= 7)) {
-			System.out.println(RankHandler.getRank(event.getPlayer().getName()).getPriority());
-			event.getPlayer().disconnect(MessageUtils
-					.colorize(MessageUtils.ERROR_COLOR + "Network under maintenance! Check back later..."));
-    }
-
 		if (!plugin.toggleOptions.containsKey(event.getPlayer().getName())) {
 			plugin.toggleOptions.put(event.getPlayer().getName(), new ToggleOptions());
 		}

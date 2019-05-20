@@ -6,6 +6,7 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import net.timelegacy.tlbungee.mongodb.MongoDB;
 import org.bson.Document;
 
@@ -44,6 +45,22 @@ public class RankHandler {
 
 		if (PlayerHandler.playerExistsName(playerName)) {
 			FindIterable<Document> doc = players.find(Filters.eq("username", playerName));
+			String rnk = doc.first().getString("rank");
+
+			for (Rank r : rankList) {
+				if (r.getName().equalsIgnoreCase(rnk)) {
+					rank = r;
+				}
+			}
+		}
+		return rank;
+	}
+
+	public static Rank getRank(UUID uuid) {
+		Rank rank = null;
+
+		if (PlayerHandler.playerExistsUUID(uuid)) {
+			FindIterable<Document> doc = players.find(Filters.eq("uuid", uuid.toString()));
 			String rnk = doc.first().getString("rank");
 
 			for (Rank r : rankList) {
