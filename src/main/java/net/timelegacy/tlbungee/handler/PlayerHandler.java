@@ -25,7 +25,12 @@ public class PlayerHandler {
 
 	public static boolean playerExistsUUID(UUID uuid) {
 		FindIterable<Document> iterable = players.find(new Document("uuid", uuid.toString()));
-		return iterable.first() != null;
+
+    if (iterable.first() != null) {
+      return true;
+    }
+
+    return false;
 	}
 
 	public static String getUUID(String playerName) {
