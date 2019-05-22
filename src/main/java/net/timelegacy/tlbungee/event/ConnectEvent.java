@@ -36,8 +36,8 @@ public class ConnectEvent implements Listener {
   @EventHandler
   public void onJoin(LoginEvent event) {
     if (plugin.whitelist) {
-      if (RankHandler.getRank(event.getConnection().getUniqueId()).getPriority() < 7
-          || !PlayerHandler.playerExistsUUID(event.getConnection().getUniqueId())) {
+      if (!PlayerHandler.playerExistsUUID(event.getConnection().getUniqueId())
+          || RankHandler.getRank(event.getConnection().getUniqueId()).getPriority() < 7) {
         event.setCancelled(true);
         event.setCancelReason(
             MessageUtils.colorize(
