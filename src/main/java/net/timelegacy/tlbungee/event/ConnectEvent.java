@@ -3,7 +3,6 @@ package net.timelegacy.tlbungee.event;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
-import java.security.SecureRandom;
 import net.md_5.bungee.api.AbstractReconnectHandler;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -21,6 +20,8 @@ import net.timelegacy.tlbungee.mongodb.MongoDB;
 import net.timelegacy.tlbungee.utils.MessageUtils;
 import org.bson.Document;
 
+import java.security.SecureRandom;
+
 public class ConnectEvent implements Listener {
 
 	private static TLBungee plugin = TLBungee.getPlugin();
@@ -36,7 +37,7 @@ public class ConnectEvent implements Listener {
   @EventHandler
   public void onJoin(LoginEvent event) {
     if (plugin.whitelist) {
-      if (!PlayerHandler.playerExistsUUID(event.getConnection().getUniqueId())
+		if (!PlayerHandler.playerExists(event.getConnection().getUniqueId())
           || RankHandler.getRank(event.getConnection().getUniqueId()).getPriority() < 7) {
         event.setCancelled(true);
         event.setCancelReason(
@@ -63,7 +64,7 @@ public class ConnectEvent implements Listener {
 			if (target.canAccess(event.getPlayer())) {
 				try {
 
-					if (RankHandler.getRank(event.getPlayer().getName()).getPriority() >= 9) {
+					if (RankHandler.getRank(event.getPlayer().getUniqueId()).getPriority() >= 9) {
             event.setTarget(randomHub());
 						MessageUtils.sendMessage(
                 event.getPlayer(),

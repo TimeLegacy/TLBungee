@@ -4,18 +4,27 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
+import net.timelegacy.tlbungee.TLBungee;
+import net.timelegacy.tlbungee.datatype.Rank;
+import net.timelegacy.tlbungee.mongodb.MongoDB;
+import org.bson.Document;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import net.timelegacy.tlbungee.mongodb.MongoDB;
-import org.bson.Document;
 
 public class RankHandler {
 
 	public static List<Rank> rankList = new ArrayList<>();
-	public static MongoCollection<Document> ranks = MongoDB.mongoDatabase.getCollection("ranks");
-	public static MongoCollection<Document> players = MongoDB.mongoDatabase.getCollection("players");
 
+	private static TLBungee plugin = TLBungee.getPlugin();
+
+	private static MongoCollection<Document> ranks = MongoDB.mongoDatabase.getCollection("ranks");
+	private static MongoCollection<Document> players = MongoDB.mongoDatabase.getCollection("players");
+
+	/**
+	 * Load the ranks from the database
+	 */
 	public static void loadRanks() {
 
 		try {
@@ -31,7 +40,6 @@ public class RankHandler {
 				String tab = doc.getString("tab_format");
 
 				rankList.add(new Rank(name, priority, chat, primary_color, secondary_color, tab));
-
 			}
 
 			cursor.close();
@@ -40,36 +48,58 @@ public class RankHandler {
 		}
 	}
 
-	public static Rank getRank(String playerName) {
-		Rank rank = null;
-
-		if (PlayerHandler.playerExistsName(playerName)) {
-			FindIterable<Document> doc = players.find(Filters.eq("username", playerName));
-			String rnk = doc.first().getString("rank");
-
-			for (Rank r : rankList) {
-				if (r.getName().equalsIgnoreCase(rnk)) {
-					rank = r;
-				}
-			}
-		}
-		return rank;
-	}
-
+	/**
+	 * Get the rank of a player
+	 *
+	 * @param uuid player's uuid
+	 * @return
+	 */
 	public static Rank getRank(UUID uuid) {
-		Rank rank = null;
-
-		if (PlayerHandler.playerExistsUUID(uuid)) {
+		if (PlayerHandler.playerExists(uuid)) {
 			FindIterable<Document> doc = players.find(Filters.eq("uuid", uuid.toString()));
 			String rnk = doc.first().getString("rank");
 
-			for (Rank r : rankList) {
-				if (r.getName().equalsIgnoreCase(rnk)) {
-					rank = r;
+			String[] ranks = rnk.split(",");
+			//list of ranks
+			for (String r : ranks) {
+				String[] rr = r.split(":");
+				Rank ranka = stringToRank(rr[0]);
+				if (ranka.getPriority() >= 6) {
+					return ranka;
 				}
 			}
 		}
-		return rank;
+		return stringToRank("DEFAULT");
 	}
 
+	/**
+	 * Convert string to a rank if it exists
+	 *
+	 * @param rank
+	 * @return
+	 */
+	public static Rank stringToRank(String rank) {
+		for (Rank r : rankList) {
+			if (r.getName().equalsIgnoreCase(rank)) {
+				return r;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Check if the rank is valid
+	 *
+	 * @param rank rank name as string
+	 * @return
+	 */
+	public static boolean isValidRank(String rank) {
+		for (Rank r : rankList) {
+			if (r.getName().equalsIgnoreCase(rank)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 }

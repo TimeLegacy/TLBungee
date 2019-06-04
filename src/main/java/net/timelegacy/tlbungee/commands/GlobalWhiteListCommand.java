@@ -5,7 +5,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.timelegacy.tlbungee.TLBungee;
-import net.timelegacy.tlbungee.handler.Rank;
+import net.timelegacy.tlbungee.datatype.Rank;
 import net.timelegacy.tlbungee.handler.RankHandler;
 import net.timelegacy.tlbungee.utils.MessageUtils;
 
@@ -25,7 +25,7 @@ public class GlobalWhiteListCommand extends Command {
 
 			ProxiedPlayer p = (ProxiedPlayer) sender;
 
-			Rank r = RankHandler.getRank(p.getName());
+			Rank r = RankHandler.getRank(p.getUniqueId());
             if (r.getPriority() >= 9) {
 
 				if (args.length == 0) {
@@ -68,7 +68,7 @@ public class GlobalWhiteListCommand extends Command {
 					} else if (third.equalsIgnoreCase("kick")) {
 						for (ProxiedPlayer pp : ProxyServer.getInstance()
 								.getPlayers()) {
-							if (RankHandler.getRank(pp.getName()).getPriority() >= 7) {
+							if (RankHandler.getRank(pp.getUniqueId()).getPriority() >= 7) {
 								MessageUtils.sendMessage(pp,
 										MessageUtils.ERROR_COLOR + "You have not been kicked due to the whitelist.",
 										true);

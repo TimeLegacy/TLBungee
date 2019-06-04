@@ -1,4 +1,4 @@
-package net.timelegacy.tlbungee.handler;
+package net.timelegacy.tlbungee.datatype;
 
 public class Rank {
 
