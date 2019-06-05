@@ -3,7 +3,8 @@ package net.timelegacy.tlbungee.event;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
-import java.security.SecureRandom;
+import java.util.List;
+import java.util.UUID;
 import net.md_5.bungee.api.AbstractReconnectHandler;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -17,6 +18,7 @@ import net.timelegacy.tlbungee.TLBungee;
 import net.timelegacy.tlbungee.ToggleOptions;
 import net.timelegacy.tlbungee.handler.PlayerHandler;
 import net.timelegacy.tlbungee.handler.RankHandler;
+import net.timelegacy.tlbungee.handler.ServerHandler;
 import net.timelegacy.tlbungee.mongodb.MongoDB;
 import net.timelegacy.tlbungee.utils.MessageUtils;
 import org.bson.Document;
@@ -28,8 +30,18 @@ public class ConnectEvent implements Listener {
   private static MongoCollection<Document> servers = MongoDB.mongoDatabase.getCollection("servers");
 
   private static ServerInfo randomHub() {
-    return ProxyServer.getInstance()
-        .getServerInfo(plugin.getHubs().get(new SecureRandom().nextInt(plugin.getHubs().size())));
+    List<String> hubs = plugin.getHubs();
+    for (String hub : hubs) {
+      UUID uuid = UUID.fromString(hub);
+      if (ServerHandler.getOnlinePlayers(uuid) < ServerHandler.getMaxPlayers(uuid)) {
+        if (ServerHandler.isOnline(uuid)) {
+          return ProxyServer.getInstance()
+              .getServerInfo(hub);
+        }
+      }
+    }
+
+    return null;
   }
 
   @EventHandler

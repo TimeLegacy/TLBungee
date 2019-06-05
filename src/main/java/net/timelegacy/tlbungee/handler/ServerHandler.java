@@ -47,4 +47,16 @@ public class ServerHandler {
 
     return onlinePlayers;
   }
+
+  /**
+   * Get the status of the server
+   *
+   * @param uuid server's uuid
+   */
+  public static boolean isOnline(UUID uuid) {
+    FindIterable<Document> doc = servers.find(Filters.eq("uuid", uuid.toString()));
+    boolean online = doc.first().getBoolean("online");
+
+    return online;
+  }
 }
