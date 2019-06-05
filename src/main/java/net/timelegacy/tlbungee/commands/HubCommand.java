@@ -15,34 +15,33 @@ import org.bson.Document;
 
 public class HubCommand extends Command {
 
-	private static MongoCollection<Document> servers = MongoDB.mongoDatabase.getCollection("servers");
-	private TLBungee plugin = TLBungee.getPlugin();
+  private static MongoCollection<Document> servers = MongoDB.mongoDatabase.getCollection("servers");
+  private TLBungee plugin = TLBungee.getPlugin();
 
-	public HubCommand() {
-		super("hub", "", "exit", "lobby", "spawn", "mineaqua");
-	}
+  public HubCommand() {
+    super("hub", "", "exit", "lobby", "spawn", "mineaqua");
+  }
 
-	@Override
-	public void execute(CommandSender sender, String[] args) {
+  @Override
+  public void execute(CommandSender sender, String[] args) {
 
-		if (sender instanceof ProxiedPlayer) {
+    if (sender instanceof ProxiedPlayer) {
 
-			ProxiedPlayer p = (ProxiedPlayer) sender;
+      ProxiedPlayer p = (ProxiedPlayer) sender;
 
-			FindIterable<Document> doc = servers
-					.find(Filters.eq("uid", p.getServer().getInfo().getName()));
-			String state = doc.first().getString("type");
-			
-			if(!state.equalsIgnoreCase("LOBBY")) {
-				p.connect(ProxyServer.getInstance()
-						.getServerInfo(
-								plugin.getHubs().get(new SecureRandom().nextInt(plugin.getHubs().size()))));
-			}else {
-				MessageUtils
-						.sendMessage(p, MessageUtils.ERROR_COLOR + "You are already connected to a lobby.",
-								true);
-			}
-		}
+      FindIterable<Document> doc =
+          servers.find(Filters.eq("uid", p.getServer().getInfo().getName()));
+      String state = doc.first().getString("type");
 
-	}
+      if (!state.equalsIgnoreCase("LOBBY")) {
+        p.connect(
+            ProxyServer.getInstance()
+                .getServerInfo(
+                    plugin.getHubs().get(new SecureRandom().nextInt(plugin.getHubs().size()))));
+      } else {
+        MessageUtils.sendMessage(
+            p, MessageUtils.ERROR_COLOR + "You are already connected to a lobby.", true);
+      }
+    }
+  }
 }

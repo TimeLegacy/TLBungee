@@ -8,18 +8,20 @@ import org.bson.Document;
 
 public class MultiplierHandler {
 
-	private static MongoCollection<Document> settings = MongoDB.mongoDatabase
-			.getCollection("settings");
+  private static MongoCollection<Document> settings =
+      MongoDB.mongoDatabase.getCollection("settings");
 
-	public static Integer getMultiplier() {
-		FindIterable<Document> doc = settings.find(Filters.eq("name", "multiplier"));
-		int multiplier = doc.first().getInteger("amount");
+  /** Get the multiplier amount */
+  public static Integer getMultiplier() {
+    FindIterable<Document> doc = settings.find(Filters.eq("name", "multiplier"));
+    int multiplier = doc.first().getInteger("amount");
 
-		return multiplier;
-	}
+    return multiplier;
+  }
 
-	public static Boolean isMultiplierEnabled() {
-		FindIterable<Document> doc = settings.find(Filters.eq("name", "multiplier"));
-		return doc.first().getBoolean("enabled");
-	}
+  /** Check if multiplier is on */
+  public static Boolean isMultiplierEnabled() {
+    FindIterable<Document> doc = settings.find(Filters.eq("name", "multiplier"));
+    return doc.first().getBoolean("enabled");
+  }
 }

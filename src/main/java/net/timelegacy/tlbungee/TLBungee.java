@@ -33,115 +33,111 @@ import org.bson.Document;
 
 public class TLBungee extends Plugin implements Listener {
 
-	public boolean whitelist = false;
+  private static TLBungee plugin = null;
+  public boolean whitelist = false;
+  public HashMap<String, String> messagesToReturn = new HashMap<String, String>();
+  public HashMap<String, ToggleOptions> toggleOptions = new HashMap<String, ToggleOptions>();
+  public List<String> hubs = new LinkedList<String>();
+  public Configuration config;
 
-	private static TLBungee plugin = null;
+  public static TLBungee getPlugin() {
+    return plugin;
+  }
 
-	public static TLBungee getPlugin() {
-		return plugin;
-	}
+  @Override
+  public void onEnable() {
 
-	public HashMap<String, String> messagesToReturn = new HashMap<String, String>();
-	public HashMap<String, ToggleOptions> toggleOptions = new HashMap<String, ToggleOptions>();
+    plugin = this;
+    try {
+      config =
+          ConfigurationProvider.getProvider(YamlConfiguration.class)
+              .load(new File(getDataFolder(), "config.yml"));
+    } catch (IOException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
 
-	public List<String> hubs = new LinkedList<String>();
+    ProxyServer.getInstance().getServers().clear();
 
-	public Configuration config;
+    MongoDB.connect(config.getString("URI"));
 
-	@Override
-	public void onEnable() {
+    load();
 
-		plugin = this;
-		try {
-			config = ConfigurationProvider.getProvider(YamlConfiguration.class)
-					.load(new File(getDataFolder(), "config.yml"));
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+    RankHandler.loadRanks();
+  }
 
-		ProxyServer.getInstance().getServers().clear();
+  @Override
+  public void onDisable() {
+    MongoDB.disconnect();
+  }
 
-		MongoDB.connect(config.getString("URI"));
+  private void load() {
 
-		load();
+    registerCommands();
+    registerEvents();
 
-		RankHandler.loadRanks();
+    getServersAndHubs();
+  }
 
-	}
+  public void getServersAndHubs() {
+    ProxyServer.getInstance().getServers().clear();
+    hubs.clear();
 
-	@Override
-	public void onDisable() {
-		MongoDB.disconnect();
-	}
+    MongoCollection<Document> servers = MongoDB.mongoDatabase.getCollection("servers");
 
-	private void load() {
+    try {
 
-		registerCommands();
-		registerEvents();
+      MongoCursor<Document> cursor = servers.find().iterator();
+      while (cursor.hasNext()) {
+        Document doc = cursor.next();
 
-		getServersAndHubs();
-	}
+        String name = doc.getString("uuid");
+        String address = doc.getString("ip");
+        int prt = doc.getInteger("port");
+        String type = doc.getString("type");
 
-	public void getServersAndHubs() {
-		ProxyServer.getInstance().getServers().clear();
-		hubs.clear();
+        if (!ProxyServer.getInstance().getServers().containsKey(name)) {
 
-		MongoCollection<Document> servers = MongoDB.mongoDatabase.getCollection("servers");
+          ServerInfo serverInfo =
+              ProxyServer.getInstance()
+                  .constructServerInfo(name, new InetSocketAddress(address, prt), "", false);
+          ProxyServer.getInstance().getServers().put(name, serverInfo);
 
-		try {
+          if (type.equalsIgnoreCase("LOBBY")) {
+            if (hubs.contains(serverInfo.getName())) {
+              System.out.print("Already found the server " + serverInfo.getName() + " on the list");
+            } else {
+              hubs.add(serverInfo.getName());
+              System.out.print("Added the server " + serverInfo.getName() + " to the list.");
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+  }
 
-			MongoCursor<Document> cursor = servers.find().iterator();
-			while (cursor.hasNext()) {
-				Document doc = cursor.next();
+  private void registerCommands() {
+    plugin.getProxy().getPluginManager().registerCommand(plugin, new PrivateMessageCommand());
+    plugin.getProxy().getPluginManager().registerCommand(plugin, new PrivateMessageReplyCommand());
+    plugin.getProxy().getPluginManager().registerCommand(plugin, new FindPlayerCommand());
+    plugin.getProxy().getPluginManager().registerCommand(plugin, new ToggleOptionsCommand());
 
-				String name = doc.getString("uuid");
-				String address = doc.getString("ip");
-				int prt = doc.getInteger("port");
-				String type = doc.getString("type");
+    plugin.getProxy().getPluginManager().registerCommand(plugin, new GlobalWhiteListCommand());
+    plugin.getProxy().getPluginManager().registerCommand(plugin, new KickCommand());
+    plugin.getProxy().getPluginManager().registerCommand(plugin, new ConnectCommand());
+    plugin.getProxy().getPluginManager().registerCommand(plugin, new RefreshNetworkCommand());
+    plugin.getProxy().getPluginManager().registerCommand(plugin, new HubCommand());
+  }
 
-				if (!ProxyServer.getInstance().getServers().containsKey(name)) {
+  private void registerEvents() {
+    plugin.getProxy().getPluginManager().registerListener(plugin, new ServerPingEvent());
+    plugin.getProxy().getPluginManager().registerListener(plugin, new ConnectEvent());
+    plugin.getProxy().getPluginManager().registerListener(plugin, new PlayerEvent());
+  }
 
-					ServerInfo serverInfo = ProxyServer.getInstance().constructServerInfo(name,
-							new InetSocketAddress(address, prt), "", false);
-					ProxyServer.getInstance().getServers().put(name, serverInfo);
-
-					if (type.equalsIgnoreCase("LOBBY")) {
-						if (hubs.contains(serverInfo.getName())) {
-							System.out.print("Already found the server " + serverInfo.getName() + " on the list");
-						} else {
-							hubs.add(serverInfo.getName());
-							System.out.print("Added the server " + serverInfo.getName() + " to the list.");
-						}
-					}
-
-				}
-			}
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-	}
-
-	private void registerCommands() {
-		plugin.getProxy().getPluginManager().registerCommand(plugin, new PrivateMessageCommand());
-		plugin.getProxy().getPluginManager().registerCommand(plugin, new PrivateMessageReplyCommand());
-		plugin.getProxy().getPluginManager().registerCommand(plugin, new FindPlayerCommand());
-		plugin.getProxy().getPluginManager().registerCommand(plugin, new ToggleOptionsCommand());
-
-		plugin.getProxy().getPluginManager().registerCommand(plugin, new GlobalWhiteListCommand());
-		plugin.getProxy().getPluginManager().registerCommand(plugin, new KickCommand());
-		plugin.getProxy().getPluginManager().registerCommand(plugin, new ConnectCommand());
-		plugin.getProxy().getPluginManager().registerCommand(plugin, new RefreshNetworkCommand());
-		plugin.getProxy().getPluginManager().registerCommand(plugin, new HubCommand());
-	}
-
-	private void registerEvents() {
-		plugin.getProxy().getPluginManager().registerListener(plugin, new ServerPingEvent());
-		plugin.getProxy().getPluginManager().registerListener(plugin, new ConnectEvent());
-		plugin.getProxy().getPluginManager().registerListener(plugin, new PlayerEvent());
-	}
-
-	public List<String> getHubs() {
-		return hubs;
-	}
+  public List<String> getHubs() {
+    return hubs;
+  }
 }

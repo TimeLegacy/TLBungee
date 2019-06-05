@@ -4,8 +4,8 @@
   <servers>
     <server>
       <id>snapshots</id>
-      <username>${env.NEXUS_REPO_USER}</username>
       <password>${env.NEXUS_REPO_PASS}</password>
+      <username>${env.NEXUS_REPO_USER}</username>
     </server>
   </servers>
 </settings>

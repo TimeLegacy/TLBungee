@@ -11,33 +11,34 @@ import net.timelegacy.tlbungee.utils.MessageUtils;
 
 public class RefreshNetworkCommand extends Command {
 
-	private static TLBungee plugin = TLBungee.getPlugin();
+  private static TLBungee plugin = TLBungee.getPlugin();
 
-	public RefreshNetworkCommand() {
-		super("refreshnetwork", "");
-	}
+  public RefreshNetworkCommand() {
+    super("refreshnetwork", "");
+  }
 
-	@Override
-	public void execute(CommandSender sender, String[] args) {
+  @Override
+  public void execute(CommandSender sender, String[] args) {
 
-		if (sender instanceof ProxiedPlayer) {
+    if (sender instanceof ProxiedPlayer) {
 
-			ProxiedPlayer p = (ProxiedPlayer) sender;
+      ProxiedPlayer p = (ProxiedPlayer) sender;
 
-			Rank r = RankHandler.getRank(p.getUniqueId());
-            if (r.getPriority() >= 9) {
+      Rank r = RankHandler.getRank(p.getUniqueId());
+      if (r.getPriority() >= 9) {
 
-				ProxyServer.getInstance().getServers().clear();
-							plugin.hubs.clear();
-							plugin.getServersAndHubs();
+        ProxyServer.getInstance().getServers().clear();
+        plugin.hubs.clear();
+        plugin.getServersAndHubs();
 
-							MessageUtils.sendMessage(p, MessageUtils.SUCCESS_COLOR
-									+ "Successfuly refreshed servers & whitelisted players.", true);
+        MessageUtils.sendMessage(
+            p,
+            MessageUtils.SUCCESS_COLOR + "Successfuly refreshed servers & whitelisted players.",
+            true);
 
-			} else {
-							MessageUtils.noPerm(p);
-			}
-		}
-
-	}
+      } else {
+        MessageUtils.noPerm(p);
+      }
+    }
+  }
 }

@@ -11,43 +11,48 @@ import net.timelegacy.tlbungee.utils.MessageUtils;
 
 public class KickCommand extends Command {
 
-	public KickCommand() {
-		super("kick", "");
-	}
+  public KickCommand() {
+    super("kick", "");
+  }
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public void execute(CommandSender sender, String[] args) {
+  @SuppressWarnings("deprecation")
+  @Override
+  public void execute(CommandSender sender, String[] args) {
 
-		if (sender instanceof ProxiedPlayer) {
+    if (sender instanceof ProxiedPlayer) {
 
-			ProxiedPlayer p = (ProxiedPlayer) sender;
+      ProxiedPlayer p = (ProxiedPlayer) sender;
 
-			Rank r = RankHandler.getRank(p.getUniqueId());
-            if (r.getPriority() >= 7) {
+      Rank r = RankHandler.getRank(p.getUniqueId());
+      if (r.getPriority() >= 7) {
 
-				if (args.length == 0) {
-					MessageUtils.sendMessage(p, MessageUtils.ERROR_COLOR + "Usage: /kick [player]", true);
-				}
+        if (args.length == 0) {
+          MessageUtils.sendMessage(p, MessageUtils.ERROR_COLOR + "Usage: /kick [player]", true);
+        }
 
-				if (args.length == 1) {
-					ProxiedPlayer t = ProxyServer.getInstance().getPlayer(args[0]);
-					if (t == null) {
-						MessageUtils.sendMessage(p, MessageUtils.ERROR_COLOR + "Player not found.", true);
-					} else {
+        if (args.length == 1) {
+          ProxiedPlayer t = ProxyServer.getInstance().getPlayer(args[0]);
+          if (t == null) {
+            MessageUtils.sendMessage(p, MessageUtils.ERROR_COLOR + "Player not found.", true);
+          } else {
 
-						MessageUtils.sendMessage(p,
-								MessageUtils.MAIN_COLOR + "Kicking " + MessageUtils.SECOND_COLOR + t.getName()
-										+ MessageUtils.MAIN_COLOR + ".", true);
-						t.disconnect(ChatColor.translateAlternateColorCodes('&', MessageUtils.messagePrefix
-								+ "&4You have been kicked from the server!"));
-					
-					}
-				}
-			} else {
-							MessageUtils.noPerm(p);
-			}
-		}
-
-	}
+            MessageUtils.sendMessage(
+                p,
+                MessageUtils.MAIN_COLOR
+                    + "Kicking "
+                    + MessageUtils.SECOND_COLOR
+                    + t.getName()
+                    + MessageUtils.MAIN_COLOR
+                    + ".",
+                true);
+            t.disconnect(
+                ChatColor.translateAlternateColorCodes(
+                    '&', MessageUtils.messagePrefix + "&4You have been kicked from the server!"));
+          }
+        }
+      } else {
+        MessageUtils.noPerm(p);
+      }
+    }
+  }
 }

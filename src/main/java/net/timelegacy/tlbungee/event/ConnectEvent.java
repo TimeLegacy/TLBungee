@@ -3,6 +3,7 @@ package net.timelegacy.tlbungee.event;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import java.security.SecureRandom;
 import net.md_5.bungee.api.AbstractReconnectHandler;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -20,24 +21,21 @@ import net.timelegacy.tlbungee.mongodb.MongoDB;
 import net.timelegacy.tlbungee.utils.MessageUtils;
 import org.bson.Document;
 
-import java.security.SecureRandom;
-
 public class ConnectEvent implements Listener {
 
-	private static TLBungee plugin = TLBungee.getPlugin();
+  private static TLBungee plugin = TLBungee.getPlugin();
 
-	private static MongoCollection<Document> servers = MongoDB.mongoDatabase.getCollection("servers");
+  private static MongoCollection<Document> servers = MongoDB.mongoDatabase.getCollection("servers");
 
   private static ServerInfo randomHub() {
-        return ProxyServer.getInstance()
-						.getServerInfo(
-								plugin.getHubs().get(new SecureRandom().nextInt(plugin.getHubs().size())));
+    return ProxyServer.getInstance()
+        .getServerInfo(plugin.getHubs().get(new SecureRandom().nextInt(plugin.getHubs().size())));
   }
 
   @EventHandler
   public void onJoin(LoginEvent event) {
     if (plugin.whitelist) {
-		if (!PlayerHandler.playerExists(event.getConnection().getUniqueId())
+      if (!PlayerHandler.playerExists(event.getConnection().getUniqueId())
           || RankHandler.getRank(event.getConnection().getUniqueId()).getPriority() < 7) {
         event.setCancelled(true);
         event.setCancelReason(
@@ -47,67 +45,68 @@ public class ConnectEvent implements Listener {
     }
   }
 
+  @EventHandler
+  public void onServerJoin(ServerConnectEvent event) {
+    if (!plugin.toggleOptions.containsKey(event.getPlayer().getName())) {
+      plugin.toggleOptions.put(event.getPlayer().getName(), new ToggleOptions());
+    }
 
-	@EventHandler
-	public void onServerJoin(ServerConnectEvent event) {
-		if (!plugin.toggleOptions.containsKey(event.getPlayer().getName())) {
-			plugin.toggleOptions.put(event.getPlayer().getName(), new ToggleOptions());
-		}
+    // if (event.getTarget().getName().contains("HUB")) {
+    if (((event.getPlayer().getServer() == null)
+            || ((plugin.getHubs().contains(event.getTarget().getName()))
+                && (!plugin.getHubs().contains(event.getPlayer().getServer().getInfo().getName()))))
+        && (plugin.getHubs().contains(event.getTarget().getName()))) {
 
-		// if (event.getTarget().getName().contains("HUB")) {
-		if (((event.getPlayer().getServer() == null) || (
-				(plugin.getHubs().contains(event.getTarget().getName()))
-						&& (!plugin.getHubs().contains(event.getPlayer().getServer().getInfo().getName()))))
-				&& (plugin.getHubs().contains(event.getTarget().getName()))) {
-
-			ServerInfo target = randomHub();
-			if (target.canAccess(event.getPlayer())) {
-				try {
-
-					if (RankHandler.getRank(event.getPlayer().getUniqueId()).getPriority() >= 9) {
-            event.setTarget(randomHub());
-						MessageUtils.sendMessage(
+      ServerInfo target = randomHub();
+      if (target.canAccess(event.getPlayer())) {
+        try {
+          if (RankHandler.getRank(event.getPlayer().getUniqueId()).getPriority() >= 9) {
+            event.setTarget(target);
+            MessageUtils.sendMessage(
                 event.getPlayer(),
-								MessageUtils.MAIN_COLOR
+                MessageUtils.MAIN_COLOR
                     + "You have joined "
-										+ MessageUtils.SECOND_COLOR
+                    + MessageUtils.SECOND_COLOR
                     + target.getName(),
                 true);
           }
         } catch (Exception e) {
-					System.out.print(e.getMessage());
-				}
-			}
-		}
-	}
+          System.out.print(e.getMessage());
+        }
+      }
+    }
+  }
 
-	@SuppressWarnings("deprecation")
-	@EventHandler
-	public void onKick(ServerKickEvent e) {
-		ProxiedPlayer p = e.getPlayer();
-		ServerInfo kickedFrom = null;
+  @SuppressWarnings("deprecation")
+  @EventHandler
+  public void onKick(ServerKickEvent e) {
+    ProxiedPlayer p = e.getPlayer();
+    ServerInfo kickedFrom = null;
 
-		if (e.getPlayer().getServer() != null) {
-			kickedFrom = e.getPlayer().getServer().getInfo();
-		} else if (plugin.getProxy().getReconnectHandler() != null) {
-			kickedFrom = plugin.getProxy().getReconnectHandler().getServer(e.getPlayer());
-		} else {
-			kickedFrom = AbstractReconnectHandler.getForcedHost(e.getPlayer().getPendingConnection());
-			if (kickedFrom == null)
-				kickedFrom = ProxyServer.getInstance()
-						.getServerInfo(e.getPlayer().getPendingConnection().getListener().getDefaultServer());
-		}
+    if (e.getPlayer().getServer() != null) {
+      kickedFrom = e.getPlayer().getServer().getInfo();
+    } else if (plugin.getProxy().getReconnectHandler() != null) {
+      kickedFrom = plugin.getProxy().getReconnectHandler().getServer(e.getPlayer());
+    } else {
+      kickedFrom = AbstractReconnectHandler.getForcedHost(e.getPlayer().getPendingConnection());
+      if (kickedFrom == null)
+        kickedFrom =
+            ProxyServer.getInstance()
+                .getServerInfo(
+                    e.getPlayer().getPendingConnection().getListener().getDefaultServer());
+    }
 
-		// ABC123
+    // ABC123
 
-		FindIterable<Document> doc = servers.find(Filters.eq("uuid", kickedFrom.getName()));
-		String state = doc.first().getString("type");
+    FindIterable<Document> doc = servers.find(Filters.eq("uuid", kickedFrom.getName()));
+    String state = doc.first().getString("type");
 
-		if (!state.equalsIgnoreCase("LOBBY")) {
-			e.setCancelled(true);
-			e.setCancelServer(randomHub());
+    if (!state.equalsIgnoreCase("LOBBY")) {
+      e.setCancelled(true);
+      e.setCancelServer(randomHub());
 
-			//MessageUtils.sendMessage(p, MessageUtils.MAIN_COLOR + "Disconnected: &7" + e.getKickReason(), false);
-		}
-	}
+      // MessageUtils.sendMessage(p, MessageUtils.MAIN_COLOR + "Disconnected: &7" +
+      // e.getKickReason(), false);
+    }
+  }
 }
