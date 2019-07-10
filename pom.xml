@@ -37,12 +37,6 @@
       <version>3.10.1</version>
     </dependency>
   </dependencies>
-  <distributionManagement>
-    <snapshotRepository>
-      <id>snapshots</id>
-      <url>${env.NEXUS_REPO_URL}snapshots/</url>
-    </snapshotRepository>
-  </distributionManagement>
 
   <groupId>net.timelegacy</groupId>
 
