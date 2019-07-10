@@ -15,7 +15,6 @@ import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.timelegacy.tlbungee.TLBungee;
-import net.timelegacy.tlbungee.ToggleOptions;
 import net.timelegacy.tlbungee.handler.PlayerHandler;
 import net.timelegacy.tlbungee.handler.RankHandler;
 import net.timelegacy.tlbungee.handler.ServerHandler;
@@ -59,9 +58,6 @@ public class ConnectEvent implements Listener {
 
   @EventHandler
   public void onServerJoin(ServerConnectEvent event) {
-    if (!plugin.toggleOptions.containsKey(event.getPlayer().getName())) {
-      plugin.toggleOptions.put(event.getPlayer().getName(), new ToggleOptions());
-    }
 
     // if (event.getTarget().getName().contains("HUB")) {
     if (((event.getPlayer().getServer() == null)

@@ -6,7 +6,8 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.timelegacy.tlbungee.TLBungee;
-import net.timelegacy.tlbungee.ToggleOptions;
+import net.timelegacy.tlbungee.datatype.PlayerProfile;
+import net.timelegacy.tlbungee.datatype.PlayerProfile.Status;
 import net.timelegacy.tlbungee.utils.MessageUtils;
 
 public class PrivateMessageCommand extends Command {
@@ -19,9 +20,6 @@ public class PrivateMessageCommand extends Command {
 
   @Override
   public void execute(CommandSender sender, String[] args) {
-    if (!plugin.toggleOptions.containsKey(sender.getName())) {
-      plugin.toggleOptions.put(sender.getName(), new ToggleOptions());
-    }
 
     if (args.length < 2) {
       MessageUtils.sendMessage(
@@ -46,9 +44,15 @@ public class PrivateMessageCommand extends Command {
 
     StringBuilder msg = new StringBuilder();
 
-    for (String arg : args) if (!arg.equals(reciepent)) msg.append(" " + arg);
+    PlayerProfile profile = new PlayerProfile(p.getUniqueId());
 
-    if (plugin.toggleOptions.get(p.getName()).isAllowPrivateMessages()) {
+    if (profile.getStatus() != Status.DND) {
+      for (String arg : args) {
+        if (!arg.equals(reciepent)) {
+          msg.append(" " + arg);
+        }
+      }
+
       MessageUtils.sendMessage(
           sender,
           "(&7To&8) &f" + reciepent + "&8:&f" + ChatColor.stripColor(msg.toString()),
@@ -60,9 +64,7 @@ public class PrivateMessageCommand extends Command {
           "&8[&7PM&8] &8");
     } else {
       MessageUtils.sendMessage(
-          sender,
-          MessageUtils.ERROR_COLOR + p.getName() + " has disabled private messaging.",
-          true);
+          sender, MessageUtils.ERROR_COLOR + "This player is in do not disturb.", true);
     }
 
     plugin.messagesToReturn.put(sender.getName(), p.getName());

@@ -23,7 +23,6 @@ import net.timelegacy.tlbungee.commands.KickCommand;
 import net.timelegacy.tlbungee.commands.PrivateMessageCommand;
 import net.timelegacy.tlbungee.commands.PrivateMessageReplyCommand;
 import net.timelegacy.tlbungee.commands.RefreshNetworkCommand;
-import net.timelegacy.tlbungee.commands.ToggleOptionsCommand;
 import net.timelegacy.tlbungee.event.ConnectEvent;
 import net.timelegacy.tlbungee.event.PlayerEvent;
 import net.timelegacy.tlbungee.event.ServerPingEvent;
@@ -36,7 +35,6 @@ public class TLBungee extends Plugin implements Listener {
   private static TLBungee plugin = null;
   public boolean whitelist = false;
   public HashMap<String, String> messagesToReturn = new HashMap<String, String>();
-  public HashMap<String, ToggleOptions> toggleOptions = new HashMap<String, ToggleOptions>();
   public List<String> hubs = new LinkedList<String>();
   public Configuration config;
 
@@ -122,7 +120,6 @@ public class TLBungee extends Plugin implements Listener {
     plugin.getProxy().getPluginManager().registerCommand(plugin, new PrivateMessageCommand());
     plugin.getProxy().getPluginManager().registerCommand(plugin, new PrivateMessageReplyCommand());
     plugin.getProxy().getPluginManager().registerCommand(plugin, new FindPlayerCommand());
-    plugin.getProxy().getPluginManager().registerCommand(plugin, new ToggleOptionsCommand());
 
     plugin.getProxy().getPluginManager().registerCommand(plugin, new GlobalWhiteListCommand());
     plugin.getProxy().getPluginManager().registerCommand(plugin, new KickCommand());

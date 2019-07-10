@@ -6,7 +6,8 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.timelegacy.tlbungee.TLBungee;
-import net.timelegacy.tlbungee.ToggleOptions;
+import net.timelegacy.tlbungee.datatype.PlayerProfile;
+import net.timelegacy.tlbungee.datatype.PlayerProfile.Status;
 import net.timelegacy.tlbungee.handler.ServerHandler;
 import net.timelegacy.tlbungee.utils.MessageUtils;
 
@@ -20,9 +21,6 @@ public class FindPlayerCommand extends Command {
 
   @Override
   public void execute(CommandSender sender, String[] args) {
-    if (!plugin.toggleOptions.containsKey(sender.getName())) {
-      plugin.toggleOptions.put(sender.getName(), new ToggleOptions());
-    }
 
     if (args.length < 1) {
       MessageUtils.sendMessage(
@@ -39,7 +37,9 @@ public class FindPlayerCommand extends Command {
       return;
     }
 
-    if (plugin.toggleOptions.get(p.getName()).isAllowServerLookup()) {
+    PlayerProfile profile = new PlayerProfile(p.getUniqueId());
+
+    if (profile.getStatus() != Status.DND) {
       MessageUtils.sendMessage(
           sender,
           MessageUtils.SECOND_COLOR
@@ -59,9 +59,7 @@ public class FindPlayerCommand extends Command {
           true);
     } else {
       MessageUtils.sendMessage(
-          sender,
-          MessageUtils.ERROR_COLOR + sender.getName() + " has disabled server lookups.",
-          true);
+          sender, MessageUtils.ERROR_COLOR + "This player is in do not disturb.", true);
     }
   }
 }
