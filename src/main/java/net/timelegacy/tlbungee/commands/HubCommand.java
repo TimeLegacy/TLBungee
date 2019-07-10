@@ -19,7 +19,7 @@ public class HubCommand extends Command {
   private TLBungee plugin = TLBungee.getPlugin();
 
   public HubCommand() {
-    super("hub", "", "exit", "lobby", "spawn", "mineaqua");
+    super("hub", "", "exit", "lobby", "spawn");
   }
 
   @Override
