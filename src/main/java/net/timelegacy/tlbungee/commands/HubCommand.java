@@ -30,7 +30,7 @@ public class HubCommand extends Command {
       ProxiedPlayer p = (ProxiedPlayer) sender;
 
       FindIterable<Document> doc =
-          servers.find(Filters.eq("uid", p.getServer().getInfo().getName()));
+          servers.find(Filters.eq("uuid", p.getServer().getInfo().getName()));
       String state = doc.first().getString("type");
 
       if (!state.equalsIgnoreCase("LOBBY")) {
