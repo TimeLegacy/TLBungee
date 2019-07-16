@@ -28,7 +28,7 @@ public class RefreshNetworkCommand extends Command {
       if (r.getPriority() >= 9) {
 
         ProxyServer.getInstance().getServers().clear();
-        plugin.hubs.clear();
+        TLBungee.getHubs().clear();
         plugin.getServersAndHubs();
 
         MessageUtils.sendMessage(

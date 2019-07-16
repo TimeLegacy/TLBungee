@@ -3,7 +3,6 @@ package net.timelegacy.tlbungee.event;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
-import java.util.List;
 import java.util.UUID;
 import net.md_5.bungee.api.AbstractReconnectHandler;
 import net.md_5.bungee.api.ProxyServer;
@@ -17,7 +16,6 @@ import net.md_5.bungee.event.EventHandler;
 import net.timelegacy.tlbungee.TLBungee;
 import net.timelegacy.tlbungee.handler.PlayerHandler;
 import net.timelegacy.tlbungee.handler.RankHandler;
-import net.timelegacy.tlbungee.handler.ServerHandler;
 import net.timelegacy.tlbungee.mongodb.MongoDB;
 import net.timelegacy.tlbungee.utils.MessageUtils;
 import org.bson.Document;
@@ -29,15 +27,9 @@ public class ConnectEvent implements Listener {
   private static MongoCollection<Document> servers = MongoDB.mongoDatabase.getCollection("servers");
 
   private static ServerInfo randomHub() {
-    List<String> hubs = plugin.getHubs();
-    for (String hub : hubs) {
+    for (String hub : plugin.getHubs()) {
       UUID uuid = UUID.fromString(hub);
-      if (ServerHandler.getOnlinePlayers(uuid) < ServerHandler.getMaxPlayers(uuid)) {
-        if (ServerHandler.isOnline(uuid)) {
-          return ProxyServer.getInstance()
-              .getServerInfo(hub);
-        }
-      }
+      return ProxyServer.getInstance().getServers().get(uuid.toString());
     }
 
     return null;
@@ -59,17 +51,12 @@ public class ConnectEvent implements Listener {
   @EventHandler
   public void onServerJoin(ServerConnectEvent event) {
 
-    // if (event.getTarget().getName().contains("HUB")) {
-    if (((event.getPlayer().getServer() == null)
-            || ((plugin.getHubs().contains(event.getTarget().getName()))
-                && (!plugin.getHubs().contains(event.getPlayer().getServer().getInfo().getName()))))
-        && (plugin.getHubs().contains(event.getTarget().getName()))) {
-
+    if (event.getPlayer().getServer() == null) {
       ServerInfo target = randomHub();
-      if (target.canAccess(event.getPlayer())) {
         try {
+          event.setTarget(target);
+
           if (RankHandler.getRank(event.getPlayer().getUniqueId()).getPriority() >= 9) {
-            event.setTarget(target);
             MessageUtils.sendMessage(
                 event.getPlayer(),
                 MessageUtils.MAIN_COLOR
@@ -81,7 +68,6 @@ public class ConnectEvent implements Listener {
         } catch (Exception e) {
           System.out.print(e.getMessage());
         }
-      }
     }
   }
 
@@ -113,8 +99,8 @@ public class ConnectEvent implements Listener {
       e.setCancelled(true);
       e.setCancelServer(randomHub());
 
-      // MessageUtils.sendMessage(p, MessageUtils.MAIN_COLOR + "Disconnected: &7" +
-      // e.getKickReason(), false);
+      //MessageUtils.sendMessage(p, MessageUtils.MAIN_COLOR + "Disconnected: &7" +
+      //e.getKickReason(), false);
     }
   }
 }

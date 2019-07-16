@@ -5,8 +5,8 @@ import com.mongodb.client.MongoCursor;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -35,7 +35,7 @@ public class TLBungee extends Plugin implements Listener {
   private static TLBungee plugin = null;
   public boolean whitelist = false;
   public HashMap<String, String> messagesToReturn = new HashMap<String, String>();
-  public List<String> hubs = new LinkedList<String>();
+  private static List<String> hubs = new ArrayList<>();
   public Configuration config;
 
   public static TLBungee getPlugin() {
@@ -134,7 +134,7 @@ public class TLBungee extends Plugin implements Listener {
     plugin.getProxy().getPluginManager().registerListener(plugin, new PlayerEvent());
   }
 
-  public List<String> getHubs() {
+  public static List<String> getHubs() {
     return hubs;
   }
 }
