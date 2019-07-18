@@ -32,11 +32,10 @@ public class RankHandler {
         String name = doc.getString("name");
         int priority = doc.getInteger("priority");
         String chat = doc.getString("chat_format");
-        String primary_color = doc.getString("primary_color");
-        String secondary_color = doc.getString("secondary_color");
+        String color = doc.getString("color");
         String tab = doc.getString("tab_format");
 
-        rankList.add(new Rank(name, priority, chat, primary_color, secondary_color, tab));
+        rankList.add(new Rank(name, priority, chat, color, tab));
       }
 
       cursor.close();
