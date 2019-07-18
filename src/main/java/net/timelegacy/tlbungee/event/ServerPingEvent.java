@@ -38,7 +38,7 @@ public class ServerPingEvent implements Listener {
       if (!plugin.whitelist) {
         sp.setDescription(
             (MessageUtils.colorize(
-                "                 &8<&3< &b{ &6&lTIME LEGACY &b} &3>&8>\n       &a&lCOMING SOON &7/ &C&n&lRELEASE DATE TBA")));
+                "                 &8<&3< &b{ &6&lTIME LEGACY &b} &3>&8>\n                &3&lCREA&b&lTIVE &7:: &a&lRELEASED")));
 
       } else if (plugin.whitelist) {
 
@@ -47,7 +47,7 @@ public class ServerPingEvent implements Listener {
 
         sp.setDescription(
             (MessageUtils.colorize(
-                "                 &8<&3< &b{ &6&lTIME LEGACY &b} &3>&8>\n       &a&lCOMING SOON &7/ &c&oNetwork under maintenance! Check back later...")));
+                "                 &8<&3< &b{ &6&lTIME LEGACY &b} &3>&8>\n       &7&c&oNetwork under maintenance! Check back later...")));
 
         // version.setName("&5&nMaintenance");
         version.setName(MessageUtils.colorize("&7?/?"));
