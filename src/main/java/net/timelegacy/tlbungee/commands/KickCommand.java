@@ -24,7 +24,7 @@ public class KickCommand extends Command {
       ProxiedPlayer p = (ProxiedPlayer) sender;
 
       Rank r = RankHandler.getRank(p.getUniqueId());
-      if (r.getPriority() >= 7) {
+      if (r.getPriority() >= 6) {
 
         if (args.length == 0) {
           MessageUtils.sendMessage(p, MessageUtils.ERROR_COLOR + "Usage: /kick [player] (message)", true);
