@@ -14,6 +14,8 @@ import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.timelegacy.tlbungee.TLBungee;
+import net.timelegacy.tlbungee.datatype.Punishment;
+import net.timelegacy.tlbungee.datatype.Punishment.Type;
 import net.timelegacy.tlbungee.handler.PlayerHandler;
 import net.timelegacy.tlbungee.handler.RankHandler;
 import net.timelegacy.tlbungee.mongodb.MongoDB;
@@ -37,13 +39,25 @@ public class ConnectEvent implements Listener {
 
   @EventHandler
   public void onJoin(LoginEvent event) {
-    if (plugin.whitelist) {
-      if (!PlayerHandler.playerExists(event.getConnection().getUniqueId())
-          || RankHandler.getRank(event.getConnection().getUniqueId()).getPriority() < 7) {
-        event.setCancelled(true);
-        event.setCancelReason(
-            MessageUtils.colorize(
-                MessageUtils.ERROR_COLOR + "Network under maintenance! Check back later..."));
+    if (PlayerHandler.playerExists(event.getConnection().getUniqueId()) &&
+        (new Punishment(event.getConnection().getUniqueId()).isPunished(Type.BAN))) {
+      Punishment punishment = new Punishment(event.getConnection().getUniqueId());
+
+      event.setCancelled(true);
+      event.setCancelReason(
+          MessageUtils.colorize("&4You have been banned. &cReason: &f&o"
+              + punishment.getPunishmentReason(Type.BAN).toString()
+              + " &cExpire: &f&o"
+              + punishment.getPunishmentExpire(Type.BAN)));
+    } else {
+      if (plugin.whitelist) {
+        if (!PlayerHandler.playerExists(event.getConnection().getUniqueId())
+            || RankHandler.getRank(event.getConnection().getUniqueId()).getPriority() < 5) {
+          event.setCancelled(true);
+          event.setCancelReason(
+              MessageUtils.colorize(
+                  MessageUtils.ERROR_COLOR + "Network under maintenance! Check back later..."));
+        }
       }
     }
   }
