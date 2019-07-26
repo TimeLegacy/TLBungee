@@ -23,12 +23,10 @@ public class BuildCommand extends Command {
 
       Rank r = RankHandler.getRank(p.getUniqueId());
       if (r.equals(
-              RankHandler.stringToRank("BUILDER")) // TODO This is never true for unknown reasons
+          RankHandler.stringToRank("BUILDER"))
           || r.equals(RankHandler.stringToRank("FOUNDER"))
           || r.equals(RankHandler.stringToRank("ADMIN"))
-          || r.equals(RankHandler.stringToRank("DEVELOPER"))
-          || p.getUniqueId().toString().equals("c908a6b2-5f9c-4d82-a39d-056df1454b1d") //TODO remove this once this builder works, this is Lewis Smith
-          || p.getUniqueId().toString().equals("c04850b9-cfc5-4265-8ff5-e0e364fc5fb7")) {//TODO remove this once this builder works, this is Jjukes
+          || r.equals(RankHandler.stringToRank("DEVELOPER"))) {
 
         if (args.length == 0) {
           MessageUtils.sendMessage(

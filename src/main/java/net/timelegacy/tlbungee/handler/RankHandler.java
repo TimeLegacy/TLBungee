@@ -49,23 +49,15 @@ public class RankHandler {
    * Get the rank of a player
    *
    * @param uuid player's uuid
-   * @return
    */
   public static Rank getRank(UUID uuid) {
     if (PlayerHandler.playerExists(uuid)) {
       FindIterable<Document> doc = players.find(Filters.eq("uuid", uuid.toString()));
       String rnk = doc.first().getString("rank");
 
-      String[] ranks = rnk.split(",");
-      // list of ranks
-      for (String r : ranks) {
-        String[] rr = r.split(":");
-        Rank ranka = stringToRank(rr[0]);
-        if (ranka.getPriority() >= 6) {
-          return ranka;
-        }
-      }
+      return stringToRank(rnk);
     }
+
     return stringToRank("DEFAULT");
   }
 
