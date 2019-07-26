@@ -41,6 +41,7 @@ public class RankHandler {
       cursor.close();
 
     } catch (Exception e) {
+      System.out.println(e);
     }
   }
 

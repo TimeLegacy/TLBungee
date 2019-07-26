@@ -15,6 +15,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
+import net.timelegacy.tlbungee.commands.BuildCommand;
 import net.timelegacy.tlbungee.commands.ConnectCommand;
 import net.timelegacy.tlbungee.commands.FindPlayerCommand;
 import net.timelegacy.tlbungee.commands.GlobalWhiteListCommand;
@@ -126,6 +127,7 @@ public class TLBungee extends Plugin implements Listener {
     plugin.getProxy().getPluginManager().registerCommand(plugin, new ConnectCommand());
     plugin.getProxy().getPluginManager().registerCommand(plugin, new RefreshNetworkCommand());
     plugin.getProxy().getPluginManager().registerCommand(plugin, new HubCommand());
+    plugin.getProxy().getPluginManager().registerCommand(plugin, new BuildCommand());
   }
 
   private void registerEvents() {
